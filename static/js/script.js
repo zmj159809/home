@@ -108,15 +108,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var html = document.querySelector('html');
     var themeState = getCookie("themeState") || "Light";
-    var tanChiShe = document.getElementById("tanChiShe");
-
+    var tanChiShe = document.getElementById("github-contribution-chart");
+    const themes = ['Light', 'Dark', 'Light1','Light2', 'Light3', 'Light4'];
 
 
 
 
 
     function changeTheme(theme) {
-        tanChiShe.src = "./static/svg/snake-" + theme + ".svg";
+        tanChiShe.src = theme === "Dark" 
+          ? "https://raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake-dark.svg"
+          : "https://raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake.svg";
         html.dataset.theme = theme;
         setCookie("themeState", theme, 365);
         themeState = theme;
@@ -138,7 +140,14 @@ document.addEventListener('DOMContentLoaded', function () {
             changeTheme("Dark");
         }
     });
-
+// 切换主题
+    // var themeSelector = document.getElementById('themeSelector'); 
+    // themeSelector.addEventListener('change', (e) => {
+    //     var  newTheme = e.target.value;
+    //     if (themes.includes(newTheme)) {
+    //             changeTheme(newTheme)
+    //     }
+    // });
 
 
     if (themeState == "Dark") {

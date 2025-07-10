@@ -1,3 +1,4 @@
+
 /*
 --svgcolor svg图标的颜色
 --main-bg-color主页背景
@@ -46,7 +47,7 @@
 
 /*非常吃性能,低配手机会卡顿*/
 /*卡片模糊背景＋黑色透明卡片+白色svg**/
-html {
+htm[data-theme="Light1"]l {
     --name: 主题1;
     --main_bg_color: url(../img/background.jpg);
     --main_text_color: #eeeeee;
@@ -65,7 +66,7 @@ html {
      --fill:#ffffff;
 }
 
-html {
+html[data-theme="Light2"] {
 
     /*图片模糊背景＋白色透明卡片+黑色svg*/
     --name: 主题2;
@@ -86,7 +87,7 @@ html {
      --fill:#000000;
 }
 
-html {
+html[data-theme="Light3"] {
     /*蓝色渐变+黑色svg**/
 
     --name: 主题3;
@@ -109,7 +110,7 @@ html {
 
 
 
-html {
+html[data-theme="Light4"] {
     /*白色简约+黑色svg**/
     --name: 主题4;
     --main_bg_color: #ffffff;
