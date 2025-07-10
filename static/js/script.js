@@ -117,8 +117,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function changeTheme(theme) {
         tanChiShe.src = theme === "Dark" 
-          ? "https://raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake-dark.svg"
-          : "https://raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake.svg";
+          ? "https://hub.gitmirror.com/raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake-dark.svg"
+          : "https://hub.gitmirror.com/raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake.svg";
         html.dataset.theme = theme;
         setCookie("themeState", theme, 365);
         themeState = theme;
