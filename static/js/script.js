@@ -100,11 +100,15 @@ function getCookie(name) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-
-
-
-
-
+    
+    // 初始化技能部分
+    if (typeof skillsConfig !== 'undefined' && typeof SkillsRenderer !== 'undefined') {
+        const skillsRenderer = new SkillsRenderer(skillsConfig);
+        skillsRenderer.init();
+        
+        // 将skillsRenderer暴露到全局，方便调试和配置
+        window.skillsRenderer = skillsRenderer;
+    }
 
     var html = document.querySelector('html');
     var themeState = getCookie("themeState") || "Light";

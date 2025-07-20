@@ -590,8 +590,10 @@ body {
 .skill {
     padding: 25px;
     width: 100%;
+    /* 为新的skills系统提供基础样式 */
 }
 
+/* 保留原有图片样式以兼容旧版本 */
 .skill img {
     width: 100%;
     height: 100%;
@@ -711,6 +713,7 @@ footer {
 
     }
 
+    /* 移动端显示调整 - 为新skills系统保留 */
     .skill #skillWap {
         display: block;
     }
