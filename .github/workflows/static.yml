@@ -20,5 +20,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
-            cd /www/wwwroot/home.xueyu159.top  # 服务器上的项目路径
-            /www/wwwroot/home.xueyu159.top     # 拉取最新代码
+            auto-pull-homepage.sh  # 拉取最新代码
