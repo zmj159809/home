@@ -11,37 +11,24 @@ document.addEventListener('contextmenu', function (event) {
     event.preventDefault();
 });
 
-function handlePress(event) {
-    this.classList.add('pressed');
-}
-
-function handleRelease(event) {
-    this.classList.remove('pressed');
-}
-
-function handleCancel(event) {
-    this.classList.remove('pressed');
-}
-
-var buttons = document.querySelectorAll('.projectItem');
-buttons.forEach(function (button) {
-    button.addEventListener('mousedown', handlePress);
-    button.addEventListener('mouseup', handleRelease);
-    button.addEventListener('mouseleave', handleCancel);
-    button.addEventListener('touchstart', handlePress);
-    button.addEventListener('touchend', handleRelease);
-    button.addEventListener('touchcancel', handleCancel);
-});
-
+/**
+ * 切换元素的类名
+ * @param {string} selector - CSS选择器
+ * @param {string} className - 要切换的类名
+ */
 function toggleClass(selector, className) {
-    var elements = document.querySelectorAll(selector);
-    elements.forEach(function (element) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(element => {
         element.classList.toggle(className);
     });
 }
 
+/**
+ * 显示或隐藏弹窗
+ * @param {string} [imageURL] - 要在弹窗中显示的图片URL
+ */
 function pop(imageURL) {
-    var tcMainElement = document.querySelector(".tc-img");
+    const tcMainElement = document.querySelector(".tc-img");
     if (imageURL) {
         tcMainElement.src = imageURL;
     }
@@ -49,14 +36,15 @@ function pop(imageURL) {
     toggleClass(".tc", "active");
 }
 
-var tc = document.getElementsByClassName('tc');
-var tc_main = document.getElementsByClassName('tc-main');
-tc[0].addEventListener('click', function (event) {
-    pop();
-});
-tc_main[0].addEventListener('click', function (event) {
-    event.stopPropagation();
-});
+// 弹窗事件监听
+const tc = document.querySelector('.tc');
+const tc_main = document.querySelector('.tc-main');
+if (tc) {
+    tc.addEventListener('click', () => pop());
+}
+if (tc_main) {
+    tc_main.addEventListener('click', event => event.stopPropagation());
+}
 
 
 
@@ -99,141 +87,92 @@ function getCookie(name) {
 
 
 
-document.addEventListener('DOMContentLoaded', function () {
-    
-    // 初始化技能部分
+/**
+ * 初始化技能渲染器
+ */
+function initSkills() {
     if (typeof skillsConfig !== 'undefined' && typeof SkillsRenderer !== 'undefined') {
         const skillsRenderer = new SkillsRenderer(skillsConfig);
         skillsRenderer.init();
-        
-        // 将skillsRenderer暴露到全局，方便调试和配置
-        window.skillsRenderer = skillsRenderer;
+        window.skillsRenderer = skillsRenderer; // 暴露到全局以便调试
     }
+}
 
-    var html = document.querySelector('html');
-    var themeState = getCookie("themeState") || "Light";
-    var tanChiShe = document.getElementById("github-contribution-chart");
-    const themes = ['Light', 'Dark', 'Light1','Light2', 'Light3', 'Light4'];
-
-
-
-
+/**
+ * 初始化主题切换器
+ */
+function initThemeSwitcher() {
+    const html = document.documentElement;
+    const tanChiShe = document.getElementById("github-contribution-chart");
+    const themeCheckbox = document.getElementById('myonoffswitch');
+    let currentTheme = getCookie("themeState") || "Light";
 
     function changeTheme(theme) {
-        tanChiShe.src = theme === "Dark" 
-          ? "https://hub.gitmirror.com/raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake-dark.svg"
-          : "https://hub.gitmirror.com/raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake.svg";
+        if (tanChiShe) {
+            tanChiShe.src = theme === "Dark" 
+              ? "https://hub.gitmirror.com/raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake-dark.svg"
+              : "https://hub.gitmirror.com/raw.githubusercontent.com/zmj159809/zmj159809/output/github-contribution-grid-snake.svg";
+        }
         html.dataset.theme = theme;
         setCookie("themeState", theme, 365);
-        themeState = theme;
+        currentTheme = theme;
+        if (themeCheckbox) {
+            themeCheckbox.checked = theme !== "Dark";
+        }
     }
 
+    if (themeCheckbox) {
+        themeCheckbox.addEventListener('change', () => {
+            changeTheme(currentTheme === "Dark" ? "Light" : "Dark");
+        });
+    }
 
+    // 初始化时应用主题
+    changeTheme(currentTheme);
+}
 
+/**
+ * 为项目卡片添加按压效果
+ */
+function addPressEffectToProjects() {
+    const projectList = document.querySelector('.projectList');
+    if (!projectList) return;
 
-
-
-
-    var Checkbox = document.getElementById('myonoffswitch')
-    Checkbox.addEventListener('change', function () {
-        if (themeState == "Dark") {
-            changeTheme("Light");
-        } else if (themeState == "Light") {
-            changeTheme("Dark");
-        } else {
-            changeTheme("Dark");
+    projectList.addEventListener('mousedown', event => {
+        const projectItem = event.target.closest('.projectItem');
+        if (projectItem) {
+            projectItem.classList.add('pressed');
         }
     });
-// 切换主题
-    // var themeSelector = document.getElementById('themeSelector'); 
-    // themeSelector.addEventListener('change', (e) => {
-    //     var  newTheme = e.target.value;
-    //     if (themes.includes(newTheme)) {
-    //             changeTheme(newTheme)
-    //     }
-    // });
 
-
-    if (themeState == "Dark") {
-        Checkbox.checked = false;
-    }
-
-    changeTheme(themeState);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-
-    var fpsElement = document.createElement('div');
-    fpsElement.id = 'fps';
-    fpsElement.style.zIndex = '10000';
-    fpsElement.style.position = 'fixed';
-    fpsElement.style.left = '0';
-    document.body.insertBefore(fpsElement, document.body.firstChild);
-
-    var showFPS = (function () {
-        var requestAnimationFrame = window.requestAnimationFrame ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame ||
-            window.oRequestAnimationFrame ||
-            window.msRequestAnimationFrame ||
-            function (callback) {
-                window.setTimeout(callback, 1000 / 60);
-            };
-
-        var fps = 0,
-            last = Date.now(),
-            offset, step, appendFps;
-
-        step = function () {
-            offset = Date.now() - last;
-            fps += 1;
-
-            if (offset >= 1000) {
-                last += offset;
-                appendFps(fps);
-                fps = 0;
+    ['mouseup', 'mouseleave'].forEach(eventType => {
+        projectList.addEventListener(eventType, event => {
+            const projectItem = event.target.closest('.projectItem');
+            if (projectItem) {
+                projectItem.classList.remove('pressed');
             }
+        });
+    });
+}
 
-            requestAnimationFrame(step);
-        };
 
-        appendFps = function (fpsValue) {
-            fpsElement.textContent = 'FPS: ' + fpsValue;
-        };
-
-        step();
-    })();
-    
-    
-    
-    //pop('./static/img/tz.jpg')
-    
-    
-    
+document.addEventListener('DOMContentLoaded', () => {
+    initSkills();
+    initThemeSwitcher();
+    addPressEffectToProjects();
 });
 
 
 
 
-var pageLoading = document.querySelector("#zyyo-loading");
-window.addEventListener('load', function() {
-    setTimeout(function () {
-        pageLoading.style.opacity = '0';
-    }, 100);
+// 页面加载动画
+window.addEventListener('load', () => {
+    const pageLoading = document.querySelector("#zyyo-loading");
+    if (pageLoading) {
+        setTimeout(() => {
+            pageLoading.style.opacity = '0';
+            // 在动画结束后将其隐藏，以防影响页面交互
+            setTimeout(() => pageLoading.style.display = 'none', 500);
+        }, 100);
+    }
 });
-
