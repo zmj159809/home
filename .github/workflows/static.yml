@@ -31,7 +31,7 @@ jobs:
             response=$(curl -s -w "%{http_code}" -X POST \
               -H "Content-Type: application/json" \
               -H "Authorization: $EXECUTOR_TOKEN" \
-              -d "{\"command\": \"auto_deploy\", \"environment\": \"production\"}" \
+              -d "{\"command\": \"auto-pull-homepage\"}" \
               "$TARGET_URL")
             
             # 分离状态码和响应体
