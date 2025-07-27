@@ -1,30 +1,60 @@
-name: Auto Deploy via SSH
+name: Secure Remote Command Execution
 
 on:
   push:
     branches:
-      - main  # 监听 main 分支推送
+      - main
 
 jobs:
-  deploy:
+  execute-command:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Execute remote script
+
+      - name: Send API Request
+        env:
+          EXECUTOR_TOKEN: ${{ secrets.REMOTE_EXECUTOR_TOKEN }}  # 直接使用token值
+          TARGET_URL: ${{ secrets.URL }}
         run: |
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ secrets.REMOTE_EXECUTOR_TOKEN }}" \
-            -d '{"command": "auto-pull-homepage"}' \
-            ${{ secrets.URL }}
-      # - name: Execute remote script
-      #   uses: appleboy/ssh-action@v1.0.3
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     username: ${{ secrets.SSH_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     port: ${{ secrets.SSH_PORT || 22 }}
-      #     script: |
-      #       auto-pull-homepage.sh  # 拉取最新代码
+          # 定义重试策略
+          max_retries=3
+          retry_delay=5
+          attempt=0
+          success=false
+          response=""
+          
+          while [ $attempt -lt $max_retries ] && [ "$success" = false ]; do
+            echo "Attempt $((attempt+1)) of $max_retries"
+            
+            # 执行请求并捕获完整响应
+            response=$(curl -s -w "%{http_code}" -X POST \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $EXECUTOR_TOKEN"  # 修正后的Authorization头
+              -d '{
+                "command": "auto-pull-homepage"
+              }' \
+              "$TARGET_URL")
+            
+            # 分离状态码和响应体
+            http_code=${response: -3}
+            body=${response:0:-3}
+            
+            # 记录调试信息
+            echo "::debug::Status Code: $http_code"
+            echo "::debug::Response Body: $body"
+            
+            if [ "$http_code" -eq 200 ]; then
+              echo "Command executed successfully"
+              success=true
+            else
+              echo "Request failed (HTTP $http_code). Retrying in $retry_delay seconds..."
+              sleep $retry_delay
+            fi
+          done
+
+          # 最终状态检查
+          if [ "$success" = false ]; then
+            echo "Deployment failed after $max_retries attempts"
+            exit 1
+          fi
