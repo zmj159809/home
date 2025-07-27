@@ -14,7 +14,7 @@ jobs:
 
       - name: Send API Request
         env:
-          EXECUTOR_TOKEN: ${{ secrets.REMOTE_EXECUTOR_TOKEN }}  # 直接使用token值
+          EXECUTOR_TOKEN: ${{ secrets.REMOTE_EXECUTOR_TOKEN }}
           TARGET_URL: ${{ secrets.URL }}
         run: |
           # 定义重试策略
@@ -27,13 +27,11 @@ jobs:
           while [ $attempt -lt $max_retries ] && [ "$success" = false ]; do
             echo "Attempt $((attempt+1)) of $max_retries"
             
-            # 执行请求并捕获完整响应
+            # 修复后的curl命令（关键修改点）
             response=$(curl -s -w "%{http_code}" -X POST \
               -H "Content-Type: application/json" \
-              -H "Authorization: $EXECUTOR_TOKEN"  # 修正后的Authorization头
-              -d '{
-                "command": "auto-pull-homepage"
-              }' \
+              -H "Authorization: $EXECUTOR_TOKEN" \
+              -d "{\"command\": \"auto_deploy\", \"environment\": \"production\"}" \
               "$TARGET_URL")
             
             # 分离状态码和响应体
